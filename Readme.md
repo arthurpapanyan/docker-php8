@@ -3,6 +3,7 @@
 - Composer
 - Redis
 - Imagick
+- RdKafka
 - pdo_mysql \
     bcmath \
     calendar \

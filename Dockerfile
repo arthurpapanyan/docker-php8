@@ -34,17 +34,31 @@ RUN apk add --no-cache \
     libpng \ 
     libxpm-dev \
     libcurl \ 
-    autoconf
+    autoconf \ 
+    git \
+    icu-dev \
+    bash \
+    php8-pcntl \
+    shadow
+
+# Clone and compile librdkafa for php extension
+
+RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure && make && make install && rm -rf librdkafka
+
 
 RUN pecl install \
     xdebug \
     imagick \
-    redis
+    redis \ 
+    rdkafka
 
 RUN docker-php-ext-enable \
     imagick \
     redis \ 
-    xdebug
+    xdebug \ 
+    rdkafka
+
+RUN docker-php-ext-configure intl
 
 RUN docker-php-ext-configure gd \
         --enable-gd \
@@ -54,6 +68,7 @@ RUN docker-php-ext-configure gd \
         --with-freetype
 
 RUN docker-php-ext-install \
+    intl \
     bcmath \
     calendar \
     curl \ 
@@ -63,7 +78,8 @@ RUN docker-php-ext-install \
     pdo_mysql \ 
     soap \
     mysqli \
-    xml
+    xml \
+    intl
 
 ## Installing ffmpeg and ffprobe
 RUN wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz
@@ -72,12 +88,9 @@ RUN mv ffmpeg-git-20220108-amd64-static /usr/local/bin/ffmpeg
 RUN rm -f ffmpeg-git-amd64-static.tar.xz
 
 # Creating Webserver User directories
-RUN mkdir -p /home/www-data
-RUN mkdir -p /var/www/html
-RUN chown -R www-data:www-data /var/www /home/www-data
+RUN mkdir -p /home/www-data && mkdir -p /var/www/html && chown -R www-data:www-data /var/www /home/www-data
 
 RUN echo http://dl-2.alpinelinux.org/alpine/edge/community/ >> /etc/apk/repositories
-RUN apk --no-cache add shadow
 
 RUN usermod -u 1002 xfs
 RUN groupmod -g 1002 xfs
