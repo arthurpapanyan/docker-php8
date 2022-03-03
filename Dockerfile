@@ -79,7 +79,7 @@ RUN docker-php-ext-install \
     soap \
     mysqli \
     xml \
-    intl
+    pcntl
 
 ## Installing ffmpeg and ffprobe
 RUN wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz
@@ -87,10 +87,9 @@ RUN tar -xvf ffmpeg-git-amd64-static.tar.xz
 RUN mv ffmpeg-git-20220108-amd64-static /usr/local/bin/ffmpeg
 RUN rm -f ffmpeg-git-amd64-static.tar.xz
 
+RUN echo 'memory_limit = 3G' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
 # Creating Webserver User directories
 RUN mkdir -p /home/www-data && mkdir -p /var/www/html && chown -R www-data:www-data /var/www /home/www-data
-
-RUN echo http://dl-2.alpinelinux.org/alpine/edge/community/ >> /etc/apk/repositories
 
 RUN usermod -u 1002 xfs
 RUN groupmod -g 1002 xfs
