@@ -27,3 +27,9 @@ As a server
 ```
 docker run -p 9000:9000 your/tagname:latest
 ```
+
+## Current Tags
+```
+artpapanyan:php8-base
+artpapanyan:php81-base
+```

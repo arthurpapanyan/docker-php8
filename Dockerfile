@@ -1,5 +1,4 @@
-FROM php:8.0.16-fpm-alpine3.15
-
+FROM php:8.1.4-fpm-alpine3.15
 WORKDIR /var/www/html
 
 # Install composer
@@ -84,7 +83,7 @@ RUN docker-php-ext-install \
 ## Installing ffmpeg and ffprobe
 RUN wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz
 RUN tar -xvf ffmpeg-git-amd64-static.tar.xz
-RUN mv ffmpeg-git-20220108-amd64-static /usr/local/bin/ffmpeg
+RUN mv ffmpeg-git-20220302-amd64-static /usr/local/bin/ffmpeg
 RUN rm -f ffmpeg-git-amd64-static.tar.xz
 
 RUN echo 'memory_limit = 3G' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
