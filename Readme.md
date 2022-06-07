@@ -20,8 +20,12 @@
 - preconfigured user for web server
 
 ## Build instructions 
-```
-docker build . -t your/tagname:latest
+### Build instructions 
+```sh
+// Set Env in Makefile to (dev|prod)
+
+make php-8
+
 ```
 As a server
 ```
