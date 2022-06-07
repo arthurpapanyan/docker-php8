@@ -8,37 +8,31 @@ ENV PATH ./vendor/bin:/composer/vendor/bin:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER 1
 RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
 
+
 # Install required libs for extension builds
 RUN apk add --no-cache \
     --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
     --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
-    curl \
+    curl-dev \
     g++ \
     gcc \ 
     make \ 
     pkgconfig \
-    imagemagick \
     imagemagick-dev \
     zlib \
-    zlib-dev \
     libpng \ 
-    libpng-dev \ 
     libwebp-dev \ 
-    libjpeg \
-    freetype-dev \
     libjpeg-turbo-dev \
+    freetype-dev \
     libcurl \
-    curl-dev \
     libzip-dev \
     libxml2-dev \
-    libpng \ 
     libxpm-dev \
-    libcurl \ 
     autoconf \ 
     git \
     icu-dev \
     bash \
-    php8-pcntl \
+    openssl-dev \
     shadow
 
 # Clone and compile librdkafa for php extension
@@ -84,8 +78,8 @@ RUN docker-php-ext-install \
 ## Installing ffmpeg and ffprobe
 RUN wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz
 RUN tar -xvf ffmpeg-git-amd64-static.tar.xz
-RUN mv ffmpeg-git-20220108-amd64-static /usr/local/bin/ffmpeg
 RUN rm -f ffmpeg-git-amd64-static.tar.xz
+RUN find . -name "ffmpeg-git" -exec mv '{}' /usr/local/bin/ffmpeg/ \; 2> /dev/null
 
 RUN echo 'memory_limit = 3G' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
 # Creating Webserver User directories

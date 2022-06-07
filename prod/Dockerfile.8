@@ -1,0 +1,92 @@
+FROM php:8.0.16-fpm-alpine3.15
+
+WORKDIR /var/www/html
+
+# Install composer
+ENV COMPOSER_HOME /composer
+ENV PATH ./vendor/bin:/composer/vendor/bin:$PATH
+ENV COMPOSER_ALLOW_SUPERUSER 1
+RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
+
+# Install required libs for extension builds
+RUN apk add --no-cache \
+    --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+    --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    curl-dev \
+    g++ \
+    gcc \ 
+    make \ 
+    pkgconfig \
+    imagemagick-dev \
+    zlib \
+    libpng \ 
+    libwebp-dev \ 
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libcurl \
+    libzip-dev \
+    libxml2-dev \
+    libxpm-dev \
+    autoconf \ 
+    git \
+    icu-dev \
+    bash \
+    openssl-dev \
+    shadow
+
+# Clone and compile librdkafa for php extension
+
+RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure && make && make install && rm -rf librdkafka
+
+
+RUN pecl install \
+    imagick \
+    redis \ 
+    rdkafka
+
+RUN docker-php-ext-enable \
+    imagick \
+    redis \ 
+    rdkafka
+
+RUN docker-php-ext-configure intl
+
+RUN docker-php-ext-configure gd \
+        --enable-gd \
+        --with-webp \
+        --with-jpeg \
+        --with-xpm \
+        --with-freetype
+
+RUN docker-php-ext-install \
+    intl \
+    bcmath \
+    calendar \
+    curl \ 
+    exif \
+    gd \
+    zip \
+    pdo_mysql \ 
+    soap \
+    mysqli \
+    xml \
+    pcntl
+
+## Installing ffmpeg and ffprobe
+RUN wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz
+RUN tar -xvf ffmpeg-git-amd64-static.tar.xz
+RUN rm -f ffmpeg-git-amd64-static.tar.xz
+RUN find . -name "ffmpeg-git" -exec mv '{}' /usr/local/bin/ffmpeg/ \; 2> /dev/null
+
+RUN echo 'memory_limit = 3G' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
+# Creating Webserver User directories
+RUN mkdir -p /home/www-data && mkdir -p /var/www/html && chown -R www-data:www-data /var/www /home/www-data
+
+RUN usermod -u 1002 xfs
+RUN groupmod -g 1002 xfs
+
+RUN groupmod -g 33 www-data
+RUN usermod -u 33 www-data
+
+
+
