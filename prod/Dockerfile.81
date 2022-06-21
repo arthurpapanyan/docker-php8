@@ -18,6 +18,7 @@ RUN apk add --no-cache \
     make \ 
     pkgconfig \
     imagemagick-dev \
+    imagemagick \
     zlib \
     libpng \ 
     libwebp-dev \ 
@@ -87,6 +88,3 @@ RUN groupmod -g 1002 xfs
 
 RUN groupmod -g 33 www-data
 RUN usermod -u 33 www-data
-
-
-
