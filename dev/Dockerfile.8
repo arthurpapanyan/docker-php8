@@ -33,7 +33,9 @@ RUN apk add --no-cache \
     icu-dev \
     bash \
     openssl-dev \
-    shadow
+    shadow \ 
+    xdg-utils
+
 
 # Clone and compile librdkafa for php extension
 
@@ -79,7 +81,7 @@ RUN docker-php-ext-install \
 RUN wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz
 RUN tar -xvf ffmpeg-git-amd64-static.tar.xz
 RUN rm -f ffmpeg-git-amd64-static.tar.xz
-RUN find . -name "ffmpeg-git" -exec mv '{}' /usr/local/bin/ffmpeg/ \; 2> /dev/null
+RUN mv ffmpeg* /usr/local/bin/ffmpeg/
 
 RUN echo 'memory_limit = 3G' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
 # Creating Webserver User directories
